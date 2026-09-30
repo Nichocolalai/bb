@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For You, BB ♡ — a letter</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --dark-mauve: #7d5478;
+      --cream: #fffafd;
+      --envelope-base: #b48cae;
+      --envelope-flap: #d8b5d0;
+      --envelope-front: #a87da0;
+      --env-h: 220px;
+      --paper-h: 285px;
+      --lift: 60px;
+      --paper-bg: #fffcf9;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      padding: 30px 15px;
+      font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+      background: radial-gradient(circle at 20% 30%, #fbe9f5, #e6cfea 70%, #dbbde0);
+      background-attachment: fixed;
+      color: var(--dark-mauve);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .page { width: 100%; max-width: 520px; text-align: center; }
+
+    .heading {
+      font-size: 13px;
+      letter-spacing: 3px;
+      margin-bottom: 24px;
+      color: #a0779b;
+      text-transform: uppercase;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    .heading span {
+      display: block;
+      font-size: 26px;
+      margin-top: 8px;
+      letter-spacing: 0;
+      color: #6c4967;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    .float {
+      position: fixed;
+      pointer-events: none;
+      color: #cfa6c7;
+      opacity: 0.7;
+      animation: floaty 4s ease-in-out infinite;
+      text-shadow: 0 2px 6px #d9b8d2;
+      z-index: 0;
+    }
+    .f1 { top: 13%; left: 10%; font-size: 32px; animation-delay: 0s; }
+    .f2 { top: 22%; right: 9%; font-size: 28px; animation-delay: .8s; }
+    .f3 { bottom: 18%; left: 14%; font-size: 26px; animation-delay: 1.2s; }
+    .f4 { bottom: 14%; right: 12%; font-size: 34px; animation-delay: .4s; }
+    .f5 { top: 9%; right: 30%; font-size: 22px; animation-delay: 1.8s; }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-14px) rotate(5deg); }
+    }
+
+    .scene {
+      position: relative;
+      width: min(380px, 90vw);
+      margin: 0 auto;
+      padding-top: 78px;
+      transition: padding-top .8s cubic-bezier(.23, 1, .32, 1);
+      z-index: 2;
+    }
+    .scene.open {
+      padding-top: calc(var(--paper-h) + var(--lift) - var(--env-h) + 32px);
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      height: var(--env-h);
+      cursor: pointer;
+      filter: drop-shadow(0 20px 20px rgba(110, 70, 100, 0.2));
+      isolation: isolate;
+      border-radius: 14px;
+      transition: transform .25s ease, filter .3s ease;
+    }
+    .envelope:not(.open):hover {
+      transform: translateY(-4px);
+      filter: drop-shadow(0 22px 25px rgba(110, 70, 100, 0.3));
+    }
+    .envelope:focus-visible {
+      outline: 3px solid #ffffffcc;
+      outline-offset: 6px;
+    }
+
+    .back {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px 10px 16px 16px;
+      background: var(--envelope-base);
+      z-index: 1;
+      box-shadow: inset 0 2px 10px #ffffff30;
+    }
+
+    .letter {
+      position: absolute;
+      left: 5%;
+      width: 90%;
+      height: 195px;
+      bottom: 12px;
+      padding: 24px 22px;
+      background: var(--paper-bg);
+      border: 1px solid #f0e0ec;
+      border-radius: 14px;
+      text-align: left;
+      overflow: hidden;
+      z-index: 2;
+      transition: transform .8s cubic-bezier(.23, 1, .32, 1),
+      height .8s cubic-bezier(.23, 1, .32, 1),
+      box-shadow .6s ease;
+      box-shadow: 0 4px 15px rgba(100, 60, 90, 0.1);
+    }
+
+    .letter h2 {
+      font-family: Georgia, serif;
+      font-size: 27px;
+      margin-bottom: 14px;
+      color: #7d5478;
+      font-weight: 300;
+      letter-spacing: -0.3px;
+    }
+
+    .letter p {
+      color: #66495f;
+      font-size: 14px;
+      line-height: 1.8;
+      font-weight: 400;
+    }
+
+    .front {
+      position: absolute;
+      inset: 0;
+      background: var(--envelope-front);
+      clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+      border-radius: 10px 10px 16px 16px;
+      z-index: 4;
+      box-shadow: inset 0 -2px 10px #2f1e2e10;
+    }
+
+    .flap {
+      position: absolute;
+      inset: 0;
+      background: var(--envelope-flap);
+      clip-path: polygon(0 0, 100% 0, 50% 59%);
+      transform-origin: top center;
+      transition: transform .7s cubic-bezier(.23, 1, .32, 1);
+      z-index: 5;
+      box-shadow: inset 0 -2px 8px #754a6f15;
+    }
+
+    .seal {
+      position: absolute;
+      left: 50%;
+      top: 47%;
+      transform: translate(-50%, -50%);
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f5d9ed;
+      border: 2px solid #fff4fb;
+      color: #a86a9e;
+      font-size: 26px;
+      box-shadow: 0 6px 14px #4a274030;
+      z-index: 6;
+      transition: opacity .2s, transform .3s;
+    }
+
+    /* ====== PANDA PIN ====== */
+    .panda-pin {
+      position: absolute;
+      width: 130px;
+      height: 132px;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      cursor: pointer;
+      animation: pandaBob 2.4s ease-in-out infinite;
+      transition: filter .3s;
+    }
+    .panda-pin:hover {
+      filter: brightness(1.06) drop-shadow(0 8px 10px #5f3a5825);
+    }
+    .panda-pin svg { width: 100%; height: 100%; overflow: visible; }
+
+    .panda-pin .panda-ear-l { animation: earWiggleL 2.6s ease-in-out infinite; transform-origin: 32px 30px; }
+    .panda-pin .panda-ear-r { animation: earWiggleR 2.6s ease-in-out infinite; transform-origin: 98px 30px; }
+    .panda-pin .panda-eye-l { animation: blinkL 4.2s infinite; transform-origin: 50px 61px; }
+    .panda-pin .panda-eye-r { animation: blinkR 4.2s infinite; transform-origin: 80px 61px; }
+    .panda-pin .panda-cheek-l { animation: cheekPulse 2.8s ease-in-out infinite; transform-origin: 34px 82px; }
+    .panda-pin .panda-cheek-r { animation: cheekPulse 2.8s ease-in-out infinite; transform-origin: 96px 82px; }
+    .panda-pin .panda-nose { animation: noseTwitch 3.4s ease-in-out infinite; transform-origin: 65px 79px; }
+    .panda-pin .panda-mouth { animation: mouthSmile 3.4s ease-in-out infinite; transform-origin: 65px 90px; }
+    .panda-pin .panda-body { animation: bodyBreathe 3s ease-in-out infinite; transform-origin: 65px 110px; }
+    .panda-pin .panda-bow { animation: bowTilt 3s ease-in-out infinite; transform-origin: 100px 30px; }
+
+    @keyframes earWiggleL {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(-8deg); }
+      60% { transform: rotate(4deg); }
+    }
+    @keyframes earWiggleR {
+      0%, 100% { transform: rotate(0deg); }
+      35% { transform: rotate(9deg); }
+      65% { transform: rotate(-3deg); }
+    }
+    @keyframes blinkL {
+      0%, 42%, 46%, 100% { transform: scaleY(1); }
+      44% { transform: scaleY(.08); }
+    }
+    @keyframes blinkR {
+      0%, 42%, 46%, 100% { transform: scaleY(1); }
+      44% { transform: scaleY(.08); }
+    }
+    @keyframes cheekPulse {
+      0%, 100% { opacity: .75; transform: scale(1); }
+      50% { opacity: .95; transform: scale(1.08); }
+    }
+    @keyframes noseTwitch {
+      0%, 80%, 100% { transform: translateX(0); }
+      85% { transform: translateX(-1.2px); }
+      90% { transform: translateX(1.2px); }
+    }
+    @keyframes mouthSmile {
+      0%, 70%, 100% { transform: scaleY(1); }
+      80% { transform: scaleY(1.15); }
+    }
+    @keyframes bodyBreathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    @keyframes bowTilt {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(6deg); }
+    }
+
+    .panda-pin.gone {
+      animation: pandaLeave .5s ease-in forwards;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .panda-pin.returning {
+      animation: pandaBack .5s ease-out, pandaBob 2.4s ease-in-out .5s infinite;
+    }
+
+    @keyframes pandaLeave {
+      0% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+      35% { transform: translateX(-50%) translateY(10px) scale(1.08); opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-100px) scale(.15); opacity: 0; }
+    }
+    @keyframes pandaBack {
+      from { transform: translateX(-50%) translateY(-50px) scale(.2); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes pandaBob {
+      0%, 100% { margin-top: 0; }
+      50% { margin-top: -8px; }
+    }
+
+    .envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope.open .letter {
+      height: var(--paper-h);
+      transform: translateY(calc(var(--lift) * -1));
+      box-shadow: 0 18px 30px -8px rgba(90, 50, 80, 0.35);
+      z-index: 7;
+      border-color: #f5e2f0;
+    }
+    .envelope.open .seal {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.6);
+    }
+
+    .bloom {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .bloom span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: center / contain no-repeat;
+      will-change: transform, opacity;
+    }
+
+    .hint {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #8e6487;
+      letter-spacing: 0.3px;
+      transition: opacity .3s;
+    }
+    .hint span {
+      display: inline-block;
+      animation: floaty 2.6s infinite;
+      opacity: 0.8;
+    }
+
+    /* ================================================================
+       MUSIC PLAYER — dark app-style design
+       ================================================================ */
+    .music {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px dashed #dcc0d7;
+      text-align: center;
+    }
+    .music-title {
+      font-size: 13px;
+      color: #8f6089;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+    }
+    .music-button {
+      border: none;
+      border-radius: 40px;
+      padding: 12px 24px;
+      background: #9a6a94;
+      color: white;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: background .25s, transform .2s, box-shadow .25s;
+      box-shadow: 0 6px 14px #8b568030;
+    }
+    .music-button:hover {
+      background: #7f5079;
+      transform: scale(1.03);
+      box-shadow: 0 8px 18px #8b568040;
+    }
+    .music-button:focus-visible {
+      outline: 3px solid #d8afd2;
+      outline-offset: 3px;
+    }
+
+    .player {
+      display: none;
+      margin-top: 14px;
+      background: #1a1a1a;
+      border-radius: 20px;
+      padding: 20px 18px 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .player.show { display: block; }
+
+    .player-art {
+      width: 100%;
+      max-width: 170px;
+      aspect-ratio: 1;
+      margin: 0 auto 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.5);
+      position: relative;
+      background: #2a2a2a;
+    }
+    .player-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .player-art:hover img {
+      transform: scale(1.04);
+    }
+    .player-art .art-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3a3a3a, #1a1a1a);
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+    }
+    .player-art .art-fallback svg {
+      width: 44px;
+      height: 44px;
+      opacity: 0.4;
+      margin-bottom: 10px;
+    }
+    .player-art .art-fallback .fallback-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      opacity: 0.95;
+    }
+    .player-art .art-fallback .fallback-artist {
+      font-size: 11px;
+      opacity: 0.55;
+      margin-top: 3px;
+    }
+
+    .player-info {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .player-info .song-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f0f0;
+      letter-spacing: 0.2px;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-info .song-artist {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 0.4px;
+    }
+
+    .player-progress {
+      padding: 0 4px;
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      position: relative;
+      height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .progress-track::before {
+      content: "";
+      position: absolute;
+      inset: -8px 0;
+    }
+    .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #b88cc4, #e8b8d8);
+      border-radius: 4px;
+      pointer-events: none;
+      transition: width .1s linear;
+    }
+    .progress-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 13px;
+      height: 13px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(232, 184, 216, 0.6);
+      transition: transform .2s ease;
+    }
+    .progress-track:hover .progress-thumb,
+    .progress-track:active .progress-thumb {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .progress-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #777;
+      margin-top: 8px;
+      padding: 0 2px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.3px;
+    }
+
+    .player-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      margin: 16px 0 18px;
+    }
+    .player-controls button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: 50%;
+      transition: transform .15s, background .2s, color .2s;
+    }
+    .player-controls button:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .player-controls button:active {
+      transform: scale(.9);
+    }
+    .player-controls button.play-pause {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #b88cc4, #9a6a94);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(154, 106, 148, 0.45);
+    }
+    .player-controls button.play-pause:hover {
+      background: linear-gradient(135deg, #c99cd4, #a87aa4);
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px rgba(154, 106, 148, 0.6);
+    }
+    .player-controls button.play-pause:active {
+      transform: scale(.95);
+    }
+    .player-controls svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+    .player-controls .play-pause svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .player-volume {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px;
+    }
+    .player-volume button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #999;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      transition: color .2s;
+    }
+    .player-volume button:hover {
+      color: #e0e0e0;
+    }
+    .player-volume svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .volume-track {
+      position: relative;
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .volume-track::before {
+      content: "";
+      position: absolute;
+      inset: -8px 0;
+    }
+    .volume-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 70%;
+      background: linear-gradient(90deg, #b88cc4, #e8b8d8);
+      border-radius: 3px;
+      transition: width .1s linear;
+    }
+    .volume-thumb {
+      position: absolute;
+      top: 50%;
+      left: 70%;
+      width: 11px;
+      height: 11px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      box-shadow: 0 0 6px rgba(232, 184, 216, 0.5);
+      transition: transform .2s ease;
+    }
+    .volume-track:hover .volume-thumb,
+    .volume-track:active .volume-thumb {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .player-eq {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      height: 16px;
+      margin-top: 14px;
+      opacity: 0.7;
+    }
+    .player-eq span {
+      width: 3px;
+      background: linear-gradient(180deg, #e8b8d8, #9a6a94);
+      border-radius: 2px;
+      height: 4px;
+      animation: eqBar 1s ease-in-out infinite;
+    }
+    .player-eq span:nth-child(1) { animation-delay: 0s; }
+    .player-eq span:nth-child(2) { animation-delay: .15s; }
+    .player-eq span:nth-child(3) { animation-delay: .3s; }
+    .player-eq span:nth-child(4) { animation-delay: .45s; }
+    .player-eq span:nth-child(5) { animation-delay: .6s; }
+    .player.paused .player-eq span { animation-play-state: paused; height: 4px; }
+
+    @keyframes eqBar {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+
+    @media (max-width: 430px) {
+      .heading { font-size: 11px; letter-spacing: 2.5px; }
+      .heading span { font-size: 22px; }
+      .scene { width: min(340px, 92vw); }
+      :root { --env-h: 205px; --paper-h: 310px; }
+      .letter { padding: 20px 18px; height: 190px; }
+      .letter h2 { font-size: 24px; }
+      .letter p { font-size: 13px; line-height: 1.75; }
+      .f1 { left: 4%; font-size: 28px; }
+      .f2 { right: 4%; font-size: 24px; }
+      .f3 { left: 6%; font-size: 22px; }
+      .f4 { right: 6%; font-size: 28px; }
+      .player-art { max-width: 150px; }
+      .player { padding: 16px 14px 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .panda-pin, .panda-pin .panda-ear-l, .panda-pin .panda-ear-r,
+      .panda-pin .panda-eye-l, .panda-pin .panda-eye-r,
+      .panda-pin .panda-cheek-l, .panda-pin .panda-cheek-r,
+      .panda-pin .panda-nose, .panda-pin .panda-mouth,
+      .panda-pin .panda-body, .panda-pin .panda-bow,
+      .float, .hint span, .player-eq span { animation: none; }
+      .letter, .flap, .panda-pin, .envelope, .scene { transition: none; }
+      .bloom { display: none; }
+      .panda-pin.gone { animation: none; visibility: hidden; }
+      .panda-pin.returning { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="float f1" aria-hidden="true">♡</div>
+<div class="float f2" aria-hidden="true">✧</div>
+<div class="float f3" aria-hidden="true">♥</div>
+<div class="float f4" aria-hidden="true">♡</div>
+<div class="float f5" aria-hidden="true">✦</div>
+
+<main class="page">
+
+  <div class="heading">
+    open it or open it
+  </div>
+
+  <div class="scene" id="scene">
+
+    <div class="panda-pin" id="panda" aria-hidden="true">
+      <svg viewBox="0 0 130 135" xmlns="http://www.w3.org/2000/svg">
+        <g class="panda-ear-l">
+          <circle cx="32" cy="30" r="20" fill="#2e242e"/>
+          <circle cx="32" cy="30" r="10" fill="#f0b4d6"/>
+        </g>
+        <g class="panda-ear-r">
+          <circle cx="98" cy="30" r="20" fill="#2e242e"/>
+          <circle cx="98" cy="30" r="10" fill="#f0b4d6"/>
+        </g>
+
+        <g class="panda-body">
+          <ellipse cx="65" cy="118" rx="38" ry="22" fill="#f5f0f2" stroke="#2e242e" stroke-width="3.5"/>
+          <ellipse cx="65" cy="122" rx="22" ry="12" fill="#e8dde2" opacity=".5"/>
+        </g>
+
+        <ellipse cx="65" cy="58" rx="46" ry="42" fill="#ffffff" stroke="#2e242e" stroke-width="4"/>
+        <ellipse cx="65" cy="62" rx="40" ry="34" fill="#faf6f8" opacity=".8"/>
+
+        <ellipse cx="50" cy="60" rx="15" ry="18" fill="#2e242e" transform="rotate(-12 50 60)"/>
+        <ellipse cx="80" cy="60" rx="15" ry="18" fill="#2e242e" transform="rotate(12 80 60)"/>
+
+        <g class="panda-eye-l">
+          <ellipse cx="50" cy="61" rx="5.5" ry="7" fill="#ffffff"/>
+          <ellipse cx="51" cy="62" rx="3" ry="4" fill="#2e242e"/>
+          <circle cx="52" cy="59.5" r="1.4" fill="#ffffff"/>
+        </g>
+        <g class="panda-eye-r">
+          <ellipse cx="80" cy="61" rx="5.5" ry="7" fill="#ffffff"/>
+          <ellipse cx="79" cy="62" rx="3" ry="4" fill="#2e242e"/>
+          <circle cx="80" cy="59.5" r="1.4" fill="#ffffff"/>
+        </g>
+
+        <g class="panda-cheek-l">
+          <ellipse cx="34" cy="82" rx="9" ry="5.5" fill="#f7b0d6" opacity=".8"/>
+        </g>
+        <g class="panda-cheek-r">
+          <ellipse cx="96" cy="82" rx="9" ry="5.5" fill="#f7b0d6" opacity=".8"/>
+        </g>
+
+        <g class="panda-nose">
+          <ellipse cx="65" cy="79" rx="6.5" ry="4.5" fill="#2e242e"/>
+          <ellipse cx="64" cy="78" rx="2" ry="1.2" fill="#ffffff40"/>
+        </g>
+
+        <g class="panda-mouth">
+          <path d="M57,88 Q65,96 73,88" fill="none" stroke="#2e242e" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M65,86 L65,91" stroke="#2e242e" stroke-width="2" stroke-linecap="round"/>
+        </g>
+
+        <g class="panda-bow">
+          <path d="M88,22 Q100,10 112,22 Q100,26 88,22Z" fill="#f0b4d6" stroke="#b881aa" stroke-width="1.2"/>
+          <path d="M88,22 Q100,34 112,22 Q100,18 88,22Z" fill="#f0b4d6" stroke="#b881aa" stroke-width="1.2"/>
+          <circle cx="100" cy="22" r="4" fill="#b06da0" stroke="#8d5583" stroke-width="1"/>
+          <path d="M94,24 Q92,34 88,36" fill="none" stroke="#b881aa" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M106,24 Q108,34 112,36" fill="none" stroke="#b881aa" stroke-width="1.8" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="envelope" id="envelope"
+         role="button"
+         tabindex="0"
+         aria-label="Open birthday letter"
+         aria-expanded="false">
+
+      <div class="back"></div>
+
+      <article class="letter">
+        <div class="paper-inner" id="paperInner">
+          <h2>happy birthday, bb!</h2>
+          <p>
+            I hope you have a really nice day and get
+            to enjoy it with the people you love.
+            I’m glad I got the chance to know you,
+            and I’m looking forward to knowing you
+            even more. Enjoy your day hehe!
+          </p>
+
+          <div class="music" id="music" inert>
+            <div class="music-title">♫ a little song for you ♫</div>
+
+            <button class="music-button" id="musicButton" type="button">
+              ♡ play our song
+            </button>
+
+            <div class="player" id="player">
+              <!-- YouTube iframe — real audio source -->
+              <div id="youtubePlayer"></div>
+
+              <!-- Album art -->
+              <div class="player-art">
+                <img
+                  id="albumArt"
+                  src="https://i.ytimg.com/vi/pSg1IOyHv6M/maxresdefault.jpg"
+                  alt="The Ridleys - Be With You album cover"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="art-fallback" style="display:none;">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="#fff"/>
+                  </svg>
+                  <div class="fallback-title">The Ridleys</div>
+                  <div class="fallback-artist">Be With You</div>
+                </div>
+              </div>
+
+              <!-- Song info -->
+              <div class="player-info">
+                <div class="song-title" id="songTitle">Be With You</div>
+                <div class="song-artist" id="songArtist">The Ridleys</div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="player-progress">
+                <div class="progress-track" id="progressTrack">
+                  <div class="progress-fill" id="progressFill"></div>
+                  <div class="progress-thumb" id="progressThumb"></div>
+                </div>
+                <div class="progress-times">
+                  <span id="currentTime">0:00</span>
+                  <span id="duration">-0:00</span>
+                </div>
+              </div>
+
+              <!-- Transport controls -->
+              <div class="player-controls">
+                <button type="button" aria-label="Previous" title="Previous" id="prevBtn">
+                  <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button type="button" class="play-pause" id="playPauseBtn" aria-label="Pause" title="Play/Pause">
+                  <svg id="playIcon" viewBox="0 0 24 24" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+                  <svg id="pauseIcon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button type="button" aria-label="Next" title="Next" id="nextBtn">
+                  <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+              </div>
+
+              <!-- Volume row -->
+              <div class="player-volume">
+                <button type="button" aria-label="Mute" title="Mute" id="muteBtn">
+                  <svg id="volIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+                <div class="volume-track" id="volumeTrack">
+                  <div class="volume-fill" id="volumeFill"></div>
+                  <div class="volume-thumb" id="volumeThumb"></div>
+                </div>
+                <button type="button" aria-label="Volume up" title="Volume">
+                  <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+              </div>
+
+              <!-- Animated equalizer bars -->
+              <div class="player-eq" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="front"></div>
+      <div class="flap"></div>
+      <div class="seal">♥</div>
+    </div>
+
+  </div>
+
+  <div class="hint" id="hint" aria-live="polite">
+    <span>♡</span> tap the envelope to open your letter <span>♡</span>
+  </div>
+
+</main>
+
+<script>
+  const envelope = document.getElementById("envelope");
+  const panda = document.getElementById("panda");
+  const scene = document.getElementById("scene");
+  const hint = document.getElementById("hint");
+
+  /* ================================================================
+     PAINTERLY WATERCOLOR FLOWERS
+     ----------------------------------------------------------------
+     Built to look like a hand-painted watercolor illustration.
+     Uses soft, blended multi-stop gradients, feathered edges,
+     visible brushstroke-like shading, and a delicate, faded feel.
+     ================================================================ */
+  const FLOWER_SRC = (() => {
+    // Soft watercolor palette — lilac, violet, sage, cream
+    const PAL = {
+      violet:      ["#2e1840", "#5a2e70", "#a878c0"],
+      softLilac:   ["#5a3a6e", "#9878b0", "#e0cce8"],
+      paleLilac:   ["#7a5a8e", "#c0a0d0", "#f0e4f4"],
+      dustyMauve:  ["#4a2e50", "#8a5e90", "#d8b8d8"],
+      creamRose:   ["#9a7a4a", "#d0b888", "#f8ecd8"],
+      sage:        ["#2e3a28", "#5a6e48", "#a0b088"],
+      paleSage:    ["#4a5a40", "#7a8e68", "#b8c8a4"],
+      stem:        ["#3a4a30", "#6a7e54", "#98a880"]
+    };
+
+    // Petal shapes — soft, organic, slightly irregular
+    const P = {
+      petalWide:  "M0,0 C-34,-16 -40,-56 0,-64 C40,-56 34,-16 0,0Z",
+      petalSoft:  "M0,0 C-28,-18 -32,-58 0,-66 C32,-58 28,-18 0,0Z",
+      petalCurl:  "M0,0 C-24,-16 -28,-50 -9,-60 C-4,-62 4,-62 9,-60 C28,-50 24,-16 0,0Z",
+      smallPetal: "M0,0 C-16,-10 -20,-34 0,-42 C20,-34 16,-10 0,0Z",
+      leaf:       "M0,0 C-20,-24 -18,-64 0,-84 C18,-64 20,-24 0,0Z",
+      smallLeaf:  "M0,0 C-11,-16 -10,-42 0,-52 C10,-42 11,-16 0,0Z"
+    };
+
+    // Multi-stop gradient for painterly shading
+    const grad = (id, stops, angle = 0) =>
+      `<linearGradient id="${id}" x1="0" y1="1" x2="0" y2="0" gradientTransform="rotate(${angle} .5 .5)">` +
+      stops.map(([off, col, op = 1]) => `<stop offset="${off}" stop-color="${col}" stop-opacity="${op}"/>`).join("") +
+      `</linearGradient>`;
+
+    // Radial shade overlay — deeper, softer
+    const shade = (id, color, op = .7) =>
+      `<radialGradient id="${id}" cx=".5" cy=".58" r=".65">` +
+      `<stop offset="0" stop-color="${color}" stop-opacity="${op}"/>` +
+      `<stop offset=".5" stop-color="${color}" stop-opacity="${op * .35}"/>` +
+      `<stop offset="1" stop-color="${color}" stop-opacity="0"/>` +
+      `</radialGradient>`;
+
+    // Soft highlight — more diffuse for watercolor feel
+    const highlight = (id, color) =>
+      `<radialGradient id="${id}" cx=".4" cy=".3" r=".6">` +
+      `<stop offset="0" stop-color="${color}" stop-opacity=".55"/>` +
+      `<stop offset=".6" stop-color="${color}" stop-opacity=".15"/>` +
+      `<stop offset="1" stop-color="${color}" stop-opacity="0"/>` +
+      `</radialGradient>`;
+
+    // Build a ring of petals with subtle irregularity
+    const ring = (path, count, offset, fill, scale = 1, jitter = 0) =>
+      Array.from({ length: count }, (_, i) => {
+        const rot = offset + i * 360 / count + Math.sin(i * 2.7) * jitter;
+        const s = scale * (0.97 + Math.sin(i * 3.3) * 0.04);
+        return `<path d="${path}" transform="rotate(${rot.toFixed(2)}) scale(${s.toFixed(3)})" ` +
+          `fill="${fill}" stroke="#2a0c1a1a" stroke-width=".5"/>`;
+      }).join("");
+
+    // Thin stamens
+    const stamens = (count, len, col, tip) =>
+      Array.from({ length: count }, (_, i) => {
+        const a = i * 360 / count + (i % 2) * 8;
+        const L = len - (i % 3) * 2.5;
+        return `<g transform="rotate(${a})">` +
+          `<line x1="0" y1="-3" x2="0" y2="-${L}" stroke="${col}" stroke-width=".8" stroke-linecap="round" stroke-opacity=".85"/>` +
+          `<circle cy="-${L}" r="1.7" fill="${tip}" stroke="#3a1a0a30" stroke-width=".35"/>` +
+          `</g>`;
+      }).join("");
+
+    // Seed texture
+    const seeds = (col, count = 22, maxR = 7) =>
+      Array.from({ length: count }, (_, i) => {
+        const r = maxR * Math.sqrt(i / count);
+        const a = i * 137.5 * Math.PI / 180;
+        return `<circle cx="${(r * Math.cos(a)).toFixed(2)}" cy="${(r * Math.sin(a)).toFixed(2)}" ` +
+          `r=".9" fill="${col}" fill-opacity=".5"/>`;
+      }).join("");
+
+    // Leaf sprigs — soft, veined
+    const leaves = (angles, palette, leafGradId) => {
+      const [d, m, l] = palette;
+      const lg = `<linearGradient id="${leafGradId}" x1="0" y1="1" x2="0" y2="0">` +
+        `<stop offset="0" stop-color="${d}"/><stop offset=".5" stop-color="${m}"/><stop offset="1" stop-color="${l}"/>` +
+        `</linearGradient>`;
+      return {
+        defs: lg,
+        body: angles.map(a =>
+          `<g transform="rotate(${a})">` +
+          `<path d="${P.leaf}" fill="url(#${leafGradId})" stroke="#1a2a101a" stroke-width=".6"/>` +
+          `<path d="M0,-12 L0,-70" stroke="#d8e8c0" stroke-opacity=".22" stroke-width=".7"/>` +
+          `<path d="M-3,-26 L-11,-38 M3,-26 L11,-38 M-3,-46 L-11,-58 M3,-46 L11,-58" ` +
+          `stroke="#d8e8c0" stroke-opacity=".15" stroke-width=".5"/>` +
+          `</g>`).join("")
+      };
+    };
+
+    // Wrapper
+    const wrap = (defs, body, id) =>
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-90 -90 180 180">` +
+        `<defs>${defs}` +
+        `<filter id="sh_${id}" x="-30%" y="-30%" width="160%" height="160%">` +
+        `<feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur"/>` +
+        `<feOffset dx="0" dy="2.5" result="offsetBlur"/>` +
+        `<feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>` +
+        `<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>` +
+        `</filter>` +
+        `</defs>` +
+        `<g filter="url(#sh_${id})">${body}</g>` +
+        `</svg>`
+      );
+
+    // ---- Flower builders ----
+
+    // Large soft rose — painterly, blended petals
+    const softRose = (k, id) => {
+      const [d, m, l] = PAL[k];
+      const defs =
+        grad("g1", [[0, d], [.35, m], [.7, m], [1, l]]) +
+        grad("g2", [[0, d], [.4, d], [.8, m], [1, l]]) +
+        grad("g3", [[0, m], [.45, m], [1, l]]) +
+        grad("g4", [[0, m], [.5, m], [1, l]]) +
+        shade("sd", d, .65) +
+        highlight("hl", l);
+      const body =
+        ring(P.petalWide, 6, 0, "url(#g1)", 1, 2) +
+        ring(P.petalWide, 6, 30, "url(#g2)", .84, 2) +
+        ring(P.petalSoft, 5, 15, "url(#g3)", .68, 2) +
+        ring(P.petalCurl, 5, 48, "url(#g4)", .5, 2) +
+        ring(P.petalSoft, 4, 22, "url(#g3)", .34, 2) +
+        `<circle r="20" fill="url(#sd)"/>` +
+        `<circle r="12" fill="${d}" fill-opacity=".35"/>` +
+        `<circle r="6" fill="url(#hl)"/>` +
+        stamens(12, 14, "#d8b870", "#c89840");
+      return wrap(defs, body, id);
+    };
+
+    // Rose with leaves
+    const leafyRose = (k, id) => {
+      const [d, m, l] = PAL[k];
+      const leafData = leaves([35, 155, 275], PAL.sage, "lf");
+      const smallLeaf = leaves([85, 205], PAL.paleSage, "lf2");
+      const defs =
+        grad("g1", [[0, d], [.35, m], [.7, m], [1, l]]) +
+        grad("g2", [[0, d], [.4, d], [.8, m], [1, l]]) +
+        grad("g3", [[0, m], [.45, m], [1, l]]) +
+        grad("g4", [[0, m], [.5, m], [1, l]]) +
+        shade("sd", d, .7) +
+        highlight("hl", l) +
+        leafData.defs + smallLeaf.defs;
+      const body =
+        leafData.body + smallLeaf.body +
+        ring(P.petalSoft, 7, 0, "url(#g1)", 1, 2) +
+        ring(P.petalSoft, 7, 26, "url(#g2)", .84, 2) +
+        ring(P.petalCurl, 6, 13, "url(#g3)", .66, 2) +
+        ring(P.petalSoft, 5, 42, "url(#g4)", .46, 2) +
+        `<circle r="18" fill="url(#sd)"/>` +
+        `<circle r="10" fill="${d}" fill-opacity=".4"/>` +
+        `<circle r="5" fill="url(#hl)"/>` +
+        seeds("#2a0e18", 22, 7);
+      return wrap(defs, body, id);
+    };
+
+    // Deep violet rose
+    const violetRose = (k, id) => {
+      const [d, m, l] = PAL[k];
+      const defs =
+        grad("g1", [[0, d], [.3, m], [.7, m], [1, l]]) +
+        grad("g2", [[0, d], [.4, d], [.8, m], [1, l]]) +
+        grad("g3", [[0, m], [.45, m], [1, l]]) +
+        shade("sd", d, .75) +
+        highlight("hl", l);
+      const body =
+        ring(P.petalWide, 7, 0, "url(#g1)", 1, 2) +
+        ring(P.petalWide, 7, 26, "url(#g2)", .82, 2) +
+        ring(P.petalCurl, 6, 13, "url(#g3)", .62, 2) +
+        ring(P.petalSoft, 5, 40, "url(#g2)", .44, 2) +
+        `<circle r="18" fill="url(#sd)"/>` +
+        `<circle r="10" fill="${d}" fill-opacity=".5"/>` +
+        `<circle r="5" fill="url(#hl)"/>` +
+        stamens(10, 12, "#c8a050", "#a87820");
+      return wrap(defs, body, id);
+    };
+
+    // Small white blossom
+    const whiteBlossom = (id) => {
+      const d = "#a898b8", m = "#e0d4e0", l = "#ffffff";
+      const defs =
+        grad("g1", [[0, d], [.4, m], [.8, m], [1, l]]) +
+        grad("g2", [[0, m], [.5, m], [1, l]]) +
+        shade("sd", d, .45) +
+        `<radialGradient id="ctr" cx=".5" cy=".5" r=".5">` +
+        `<stop offset="0" stop-color="#f0d060"/>` +
+        `<stop offset="1" stop-color="#c89820"/>` +
+        `</radialGradient>`;
+      const body =
+        ring(P.smallPetal, 5, 0, "url(#g1)", 1, 2) +
+        ring(P.smallPetal, 5, 36, "url(#g2)", .72, 2) +
+        `<circle r="10" fill="url(#sd)"/>` +
+        `<circle r="4" fill="url(#ctr)" stroke="#7a4a1030" stroke-width=".5"/>`;
+      return wrap(defs, body, id);
+    };
+
+    // Closed violet bud
+    const violetBud = (id) => {
+      const [d, m, l] = PAL.violet;
+      const defs =
+        grad("g1", [[0, d], [.4, m], [1, l]]) +
+        shade("sd", d, .6) +
+        highlight("hl", l);
+      const body =
+        `<ellipse rx="15" ry="22" fill="url(#g1)" stroke="#2a0e1e30" stroke-width=".8"/>` +
+        `<ellipse cx="-3" cy="-5" rx="7" ry="11" fill="${l}" opacity=".4"/>` +
+        `<ellipse cy="4" rx="6" ry="8" fill="${d}" opacity=".35"/>` +
+        `<circle r="3" fill="url(#hl)"/>`;
+      return wrap(defs, body, id);
+    };
+
+    return [
+      softRose("softLilac", "sr1"),
+      softRose("paleLilac", "sr2"),
+      softRose("dustyMauve", "sr3"),
+      softRose("creamRose", "sr4"),
+      leafyRose("softLilac", "lr1"),
+      leafyRose("paleLilac", "lr2"),
+      leafyRose("dustyMauve", "lr3"),
+      violetRose("violet", "vr1"),
+      violetRose("dustyMauve", "vr2"),
+      whiteBlossom("wb1"),
+      whiteBlossom("wb2"),
+      violetBud("vb1"),
+      violetBud("vb2")
+    ];
+  })();
+
+  // Painterly loose petals
+  const PETAL_SRC = (() => {
+    const petals = [
+      ["#5a3a6e", "#9878b0", "#e0cce8"],
+      ["#7a5a8e", "#c0a0d0", "#f0e4f4"],
+      ["#2e1840", "#5a2e70", "#a878c0"],
+      ["#4a2e50", "#8a5e90", "#d8b8d8"],
+      ["#9a7a4a", "#d0b888", "#f8ecd8"]
+    ];
+    return petals.map((c) =>
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-45 -72 90 90">` +
+        `<defs>` +
+        `<linearGradient id="g" x1="0" y1="1" x2="0" y2="0">` +
+        `<stop offset="0" stop-color="${c[0]}"/>` +
+        `<stop offset=".4" stop-color="${c[1]}"/>` +
+        `<stop offset=".7" stop-color="${c[1]}"/>` +
+        `<stop offset="1" stop-color="${c[2]}"/>` +
+        `</linearGradient>` +
+        `<radialGradient id="h" cx=".4" cy=".3" r=".55">` +
+        `<stop offset="0" stop-color="${c[2]}" stop-opacity=".5"/>` +
+        `<stop offset=".6" stop-color="${c[2]}" stop-opacity=".15"/>` +
+        `<stop offset="1" stop-color="${c[2]}" stop-opacity="0"/>` +
+        `</radialGradient>` +
+        `<filter id="s">` +
+        `<feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="b"/>` +
+        `<feOffset dx="0" dy="1.5" result="o"/>` +
+        `<feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>` +
+        `<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>` +
+        `</filter>` +
+        `</defs>` +
+        `<g filter="url(#s)">` +
+        `<path d="M0,0 C-34,-18 -38,-60 0,-68 C38,-60 34,-18 0,0Z" ` +
+        `fill="url(#g)" stroke="#2a0e1e25" stroke-width=".6"/>` +
+        `<path d="M0,-10 L0,-58" stroke="#ffffff22" stroke-width=".8"/>` +
+        `<ellipse cx="-4" cy="-36" rx="10" ry="18" fill="url(#h)"/>` +
+        `</g>` +
+        `</svg>`));
+  })();
+
+  function flowerBurst() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const w = innerWidth, h = innerHeight;
+    const box = envelope.getBoundingClientRect();
+    const ox = box.left + box.width / 2;
+    const oy = box.top + box.height / 2;
+    const maxDist = Math.hypot(Math.max(ox, w - ox), Math.max(oy, h - oy));
+
+    const layer = document.createElement("div");
+    layer.className = "bloom";
+    document.body.appendChild(layer);
+
+    const glow = document.createElement("div");
+    glow.style.cssText =
+      `position:absolute;inset:0;background:radial-gradient(circle at ${ox}px ${oy}px,#f0e6f8f0,#e0cce0aa 55%,#d8c0dc55)`;
+    layer.appendChild(glow);
+    glow.animate(
+      [{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 1, offset: .7 }, { opacity: 0 }],
+      { duration: 4200, fill: "both" }
+    );
+
+    const step = Math.max(70, Math.sqrt(w * h / 180));
+    for (let x = -step / 2; x < w + step; x += step) {
+      for (let y = -step / 2; y < h + step; y += step) {
+        const dx = x + (Math.random() - .5) * step * .7 - ox;
+        const dy = y + (Math.random() - .5) * step * .7 - oy;
+        const size = step * (1.2 + Math.random() * .9);
+        const spin = (Math.random() - .5) * 100;
+        const delay = (Math.hypot(dx, dy) / maxDist) * 550 + Math.random() * 150;
+        const pos = `translate(-50%,-50%) translate(${dx}px,${dy}px)`;
+
+        const f = document.createElement("span");
+        f.style.cssText = `left:${ox}px;top:${oy}px;width:${size}px;height:${size}px`;
+        f.style.backgroundImage = `url("${FLOWER_SRC[Math.floor(Math.random() * FLOWER_SRC.length)]}")`;
+        layer.appendChild(f);
+
+        f.animate([
+          { transform: `translate(-50%,-50%) scale(0) rotate(0deg)`, opacity: 0,
+            easing: "cubic-bezier(.16,1.25,.3,1)" },
+          { transform: `${pos} scale(1.25) rotate(${spin * .6}deg)`, opacity: 1, offset: .22 },
+          { transform: `${pos} scale(1) rotate(${spin}deg)`, opacity: 1, offset: .34 },
+          { transform: `${pos} scale(1.04) rotate(${spin * 1.1}deg)`, opacity: 1, offset: .68 },
+          { transform: `${pos} translateY(100px) scale(.65) rotate(${spin * 1.4}deg)`, opacity: 0 }
+        ], { duration: 4400, delay, fill: "both" });
+      }
+    }
+
+    for (let i = 0; i < 52; i++) {
+      const sz = 26 + Math.random() * 28;
+      const p = document.createElement("span");
+      p.style.cssText = `left:${Math.random() * w}px;top:-80px;width:${sz}px;height:${sz}px`;
+      p.style.backgroundImage = `url("${PETAL_SRC[i % PETAL_SRC.length]}")`;
+      layer.appendChild(p);
+      p.animate([
+        { transform: "translate(0,0) rotate(0deg)", opacity: 0 },
+        { opacity: 1, offset: .08 },
+        { transform: `translate(${(Math.random() - .5) * 220}px,${h + 160}px) rotate(${(Math.random() - .5) * 1100}deg)`,
+          opacity: 1 }
+      ], {
+        duration: 3200 + Math.random() * 2200,
+        delay: 1800 + Math.random() * 1600,
+        fill: "both",
+        easing: "cubic-bezier(.3,.1,.5,1)"
+      });
+    }
+
+    setTimeout(() => layer.remove(), 9000);
+  }
+
+  function setOpen(open) {
+    envelope.classList.toggle("open", open);
+    scene.classList.toggle("open", open);
+    envelope.setAttribute("aria-expanded", open);
+    envelope.setAttribute("aria-label", open ? "Close birthday letter" : "Open birthday letter");
+
+    panda.classList.toggle("gone", open);
+    panda.classList.toggle("returning", !open && panda.dataset.seen === "1");
+    if (open) panda.dataset.seen = "1";
+
+    hint.innerHTML = open
+      ? "<span>♡</span> a little letter, just for you <span>♡</span>"
+      : "<span>♡</span> tap the envelope to open your letter <span>♡</span>";
+
+    music.toggleAttribute("inert", !open);
+    if (open) { fitPaper(); flowerBurst(); } else { hideMusic(); }
+  }
+
+  envelope.addEventListener("click", () => setOpen(!envelope.classList.contains("open")));
+  envelope.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setOpen(!envelope.classList.contains("open"));
+    }
+  });
+  panda.addEventListener("click", () => setOpen(true));
+
+  const music = document.getElementById("music");
+  const musicButton = document.getElementById("musicButton");
+  const player = document.getElementById("player");
+  const letter = envelope.querySelector(".letter");
+  const paperInner = document.getElementById("paperInner");
+
+  function fitPaper() {
+    const cs = getComputedStyle(letter);
+    const h = paperInner.offsetHeight
+      + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+      + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    scene.style.setProperty("--paper-h", Math.ceil(h) + "px");
+  }
+
+  function hideMusic() {
+    if (ytPlayer && ytPlayer.stopVideo) {
+      ytPlayer.stopVideo();
+    }
+    player.classList.remove("show");
+    player.classList.add("paused");
+    musicButton.textContent = "♡ play our song";
+    resetPlayerUI();
+    fitPaper();
+  }
+
+  ["click", "keydown"].forEach(type =>
+    music.addEventListener(type, e => e.stopPropagation())
+  );
+
+  /* ================================================================
+     YOUTUBE IFRAME API + FUNCTIONAL PLAYER
+     "Be With You" by The Ridleys
+     Video: https://youtu.be/pSg1IOyHv6M
+     ================================================================ */
+  const VIDEO_ID = "pSg1IOyHv6M";
+
+  let ytPlayer = null;
+  let ytReady = false;
+  let progressInterval = null;
+
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName("script")[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player("youtubePlayer", {
+      height: "1",
+      width: "1",
+      videoId: VIDEO_ID,
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        modestbranding: 1,
+        rel: 0,
+        playsinline: 1,
+        origin: window.location.origin
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange
+      }
+    });
+  };
+
+  function onPlayerReady() {
+    ytReady = true;
+    updateDuration();
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      setPlayIcon(true);
+      player.classList.remove("paused");
+      startProgressUpdater();
+    } else if (event.data === YT.PlayerState.PAUSED) {
+      setPlayIcon(false);
+      player.classList.add("paused");
+      stopProgressUpdater();
+    } else if (event.data === YT.PlayerState.ENDED) {
+      setPlayIcon(false);
+      player.classList.add("paused");
+      stopProgressUpdater();
+      progressFill.style.width = "100%";
+      progressThumb.style.left = "100%";
+      currentTimeEl.textContent = durationEl.textContent.replace("-", "");
+    }
+  }
+
+  const currentTimeEl = document.getElementById("currentTime");
+  const durationEl = document.getElementById("duration");
+  const progressTrack = document.getElementById("progressTrack");
+  const progressFill = document.getElementById("progressFill");
+  const progressThumb = document.getElementById("progressThumb");
+  const volumeTrack = document.getElementById("volumeTrack");
+  const volumeFill = document.getElementById("volumeFill");
+  const volumeThumb = document.getElementById("volumeThumb");
+  const playPauseBtn = document.getElementById("playPauseBtn");
+  const playIcon = document.getElementById("playIcon");
+  const pauseIcon = document.getElementById("pauseIcon");
+  const muteBtn = document.getElementById("muteBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  let isMuted = false;
+  let volumePct = 70;
+
+  function fmt(seconds) {
+    if (!seconds || isNaN(seconds)) return "0:00";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+
+  function updateDuration() {
+    if (ytReady && ytPlayer.getDuration) {
+      const d = ytPlayer.getDuration();
+      durationEl.textContent = "-" + fmt(d);
+    }
+  }
+
+  function startProgressUpdater() {
+    stopProgressUpdater();
+    progressInterval = setInterval(() => {
+      if (!ytReady || !ytPlayer.getCurrentTime) return;
+      const cur = ytPlayer.getCurrentTime();
+      const dur = ytPlayer.getDuration();
+      if (dur > 0) {
+        const pct = (cur / dur) * 100;
+        progressFill.style.width = pct + "%";
+        progressThumb.style.left = pct + "%";
+        currentTimeEl.textContent = fmt(cur);
+        durationEl.textContent = "-" + fmt(dur - cur);
+      }
+    }, 250);
+  }
+
+  function stopProgressUpdater() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
+    }
+  }
+
+  function setPlayIcon(isPlaying) {
+    playIcon.style.display = isPlaying ? "none" : "block";
+    pauseIcon.style.display = isPlaying ? "block" : "none";
+    playPauseBtn.setAttribute("aria-label", isPlaying ? "Pause" : "Play");
+  }
+
+  function resetPlayerUI() {
+    setPlayIcon(false);
+    progressFill.style.width = "0%";
+    progressThumb.style.left = "0%";
+    currentTimeEl.textContent = "0:00";
+    durationEl.textContent = "-0:00";
+    stopProgressUpdater();
+  }
+
+  playPauseBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ytReady) return;
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+      ytPlayer.pauseVideo();
+    } else {
+      ytPlayer.playVideo();
+    }
+  });
+
+  prevBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ytReady) return;
+    ytPlayer.seekTo(0, true);
+  });
+
+  nextBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ytReady) return;
+    ytPlayer.seekTo(0, true);
+    ytPlayer.playVideo();
+  });
+
+  muteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ytReady) return;
+    if (isMuted) {
+      ytPlayer.unMute();
+      ytPlayer.setVolume(volumePct);
+      isMuted = false;
+      volumeFill.style.width = volumePct + "%";
+      volumeThumb.style.left = volumePct + "%";
+      muteBtn.style.color = "#999";
+    } else {
+      ytPlayer.mute();
+      isMuted = true;
+      volumeFill.style.width = "0%";
+      volumeThumb.style.left = "0%";
+      muteBtn.style.color = "#555";
+    }
+  });
+
+  function setProgress(e) {
+    if (!ytReady) return;
+    const rect = progressTrack.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    progressFill.style.width = pct + "%";
+    progressThumb.style.left = pct + "%";
+    const dur = ytPlayer.getDuration();
+    if (dur > 0) {
+      ytPlayer.seekTo((pct / 100) * dur, true);
+    }
+  }
+  let draggingProgress = false;
+  progressTrack.addEventListener("mousedown", (e) => { draggingProgress = true; setProgress(e); });
+  document.addEventListener("mousemove", (e) => { if (draggingProgress) setProgress(e); });
+  document.addEventListener("mouseup", () => { draggingProgress = false; });
+  progressTrack.addEventListener("touchstart", (e) => { draggingProgress = true; setProgress(e); e.preventDefault(); }, { passive: false });
+  document.addEventListener("touchmove", (e) => { if (draggingProgress) setProgress(e); }, { passive: false });
+  document.addEventListener("touchend", () => { draggingProgress = false; });
+
+  function setVolume(e) {
+    const rect = volumeTrack.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    volumePct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    volumeFill.style.width = volumePct + "%";
+    volumeThumb.style.left = volumePct + "%";
+    isMuted = false;
+    muteBtn.style.color = "#999";
+    if (ytReady) {
+      ytPlayer.unMute();
+      ytPlayer.setVolume(volumePct);
+    }
+  }
+  let draggingVolume = false;
+  volumeTrack.addEventListener("mousedown", (e) => { draggingVolume = true; setVolume(e); });
+  document.addEventListener("mousemove", (e) => { if (draggingVolume) setVolume(e); });
+  document.addEventListener("mouseup", () => { draggingVolume = false; });
+  volumeTrack.addEventListener("touchstart", (e) => { draggingVolume = true; setVolume(e); e.preventDefault(); }, { passive: false });
+  document.addEventListener("touchmove", (e) => { if (draggingVolume) setVolume(e); }, { passive: false });
+  document.addEventListener("touchend", () => { draggingVolume = false; });
+
+  player.addEventListener("click", (e) => e.stopPropagation());
+  player.addEventListener("keydown", (e) => e.stopPropagation());
+
+  musicButton.addEventListener("click", () => {
+    if (player.classList.contains("show")) {
+      hideMusic();
+    } else {
+      player.classList.add("show");
+      player.classList.remove("paused");
+      musicButton.textContent = "♡ hide music player";
+      fitPaper();
+      if (ytReady) {
+        ytPlayer.playVideo();
+      } else {
+        const checkReady = setInterval(() => {
+          if (ytReady) {
+            ytPlayer.playVideo();
+            clearInterval(checkReady);
+          }
+        }, 200);
+      }
+    }
+  });
+
+  window.addEventListener("resize", fitPaper);
+  fitPaper();
+</script>
+
+</body>
+</html>
